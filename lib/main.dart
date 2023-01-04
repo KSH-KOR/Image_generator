@@ -8,7 +8,9 @@ import 'package:openai_client/openai_client.dart';
 import 'dart:developer' show log;
 
 import 'package:http/http.dart' as http;
+import 'package:openai_dalle_wrapper/openai_dalle_wrapper.dart';
 
+import 'package:image/image.dart' as eImage;
 void main() {
   runApp(MaterialApp(
     title: 'Flutter Demo',
@@ -82,6 +84,10 @@ class OpenAIProvider {
   static String prompt = '';
   static String? apiKey;
 
+  OpenaiDalleWrapper get openAi => OpenaiDalleWrapper(
+    apiKey: apiKey!,
+  );
+
   OpenAIConfiguration? get conf => apiKey != null
       ? OpenAIConfiguration(
           apiKey: apiKey!,
@@ -100,7 +106,7 @@ class ImageList extends StatelessWidget {
   Widget build(BuildContext context) {
     final File inputImage = File("assets/sample.jpg");
     return FutureBuilder(
-      future: editImagesWithOpenAI(inputImage: inputImage),
+      future: editImages(inputImage: inputImage),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
@@ -116,7 +122,7 @@ class ImageList extends StatelessWidget {
                       return SizedBox(
                         width: 300,
                         height: 300,
-                        child: FutureBuilder(
+                        child: snapshot.data?[index]/*FutureBuilder(
                           future: snapshot.data![index],
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
@@ -126,7 +132,7 @@ class ImageList extends StatelessWidget {
                                 return const CircularProgressIndicator();
                             }
                           },
-                        ),
+                        ),*/
                       );
                     },
                   );
@@ -142,6 +148,16 @@ class ImageList extends StatelessWidget {
     );
   }
 }
+File encodeJpgToPng({required File inputIpg}){
+  // Read a jpeg image from file.
+  eImage.Image? image = eImage.decodeImage(inputIpg.readAsBytesSync());
+
+  // Resize the image to a 120x? thumbnail (maintaining the aspect ratio).
+  eImage.Image thumbnail = eImage.copyResize(image!, width: 120, height: 120);
+
+  // Save the thumbnail as a PNG.
+  return File.fromRawPath(eImage.encodePng(thumbnail));
+}
 
 Future<Uint8List> networkImageToBase64(String imageUrl) async {
   Uri uri = Uri.parse(imageUrl);
@@ -153,25 +169,31 @@ Future<Uint8List> networkImageToBase64(String imageUrl) async {
 Future<List<Future<Widget>>> createImagesWithOpenAI({int n = 5}) async {
   final Request requestImage = OpenAIProvider().client!.images.create(
         prompt: OpenAIProvider.prompt,
-        n: 10,
+        n: n,
       );
   return _getImagesFromRequest(request: requestImage);
 }
 
 Future<List<Future<Widget>>> editImagesWithOpenAI(
     {required File inputImage, int n = 5}) async {
-  final Request requestImage = OpenAIProvider().client!.images.variation(
-        image: inputImage,
-        n: 1,
+  
+  final Request requestImage = OpenAIProvider().client!.images.edit(
+        image: encodeJpgToPng(inputIpg: inputImage),
+        prompt: OpenAIProvider.prompt,
+        n: n,
       );
   return _getImagesFromRequest(request: requestImage);
+}
+
+Future<List> editImages({required File inputImage, int n = 5}){
+  return OpenAIProvider().openAi.editImage(encodeJpgToPng(inputIpg: inputImage).path, OpenAIProvider.prompt, n, );
 }
 
 Future<List<Future<Widget>>> createDifferentVariationsWithOpenAI(
     {required File inputImage, int n = 5}) async {
   final Request requestImage = OpenAIProvider().client!.images.variation(
         image: inputImage,
-        n: 1,
+        n: n,
       );
   return _getImagesFromRequest(request: requestImage);
 }
@@ -186,7 +208,7 @@ Future<List<Future<Widget>>> _getImagesFromRequest({required Request request}) a
     return [
       Future.delayed(
         const Duration(seconds: 0),
-        () => Text(
+        () => SelectableText(
           response.json['error']['message'],
         ),
       ),
@@ -195,7 +217,7 @@ Future<List<Future<Widget>>> _getImagesFromRequest({required Request request}) a
     return [
       Future.delayed(
         const Duration(seconds: 0),
-        () => Text("error occured: $e"),
+        () => SelectableText("error occured: $e"),
       ),
     ];
   }

@@ -8,7 +8,6 @@ import 'package:openai_client/openai_client.dart';
 import 'dart:developer' show log;
 
 import 'package:http/http.dart' as http;
-import 'package:openai_dalle_wrapper/openai_dalle_wrapper.dart';
 
 import 'package:image/image.dart' as eImage;
 void main() {
@@ -84,10 +83,6 @@ class OpenAIProvider {
   static String prompt = '';
   static String? apiKey;
 
-  OpenaiDalleWrapper get openAi => OpenaiDalleWrapper(
-    apiKey: apiKey!,
-  );
-
   OpenAIConfiguration? get conf => apiKey != null
       ? OpenAIConfiguration(
           apiKey: apiKey!,
@@ -106,7 +101,7 @@ class ImageList extends StatelessWidget {
   Widget build(BuildContext context) {
     final File inputImage = File("assets/sample.jpg");
     return FutureBuilder(
-      future: editImages(inputImage: inputImage),
+      future: createImagesWithOpenAI(),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
@@ -122,7 +117,7 @@ class ImageList extends StatelessWidget {
                       return SizedBox(
                         width: 300,
                         height: 300,
-                        child: snapshot.data?[index]/*FutureBuilder(
+                        child: FutureBuilder(
                           future: snapshot.data![index],
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
@@ -132,7 +127,7 @@ class ImageList extends StatelessWidget {
                                 return const CircularProgressIndicator();
                             }
                           },
-                        ),*/
+                        ),
                       );
                     },
                   );
@@ -183,10 +178,6 @@ Future<List<Future<Widget>>> editImagesWithOpenAI(
         n: n,
       );
   return _getImagesFromRequest(request: requestImage);
-}
-
-Future<List> editImages({required File inputImage, int n = 5}){
-  return OpenAIProvider().openAi.editImage(encodeJpgToPng(inputIpg: inputImage).path, OpenAIProvider.prompt, n, );
 }
 
 Future<List<Future<Widget>>> createDifferentVariationsWithOpenAI(

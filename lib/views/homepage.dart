@@ -1,10 +1,5 @@
-import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:mut_is/views/search_view.dart';
 import 'package:provider/provider.dart';
 
 import '../enum/search_states.dart';
@@ -19,7 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isSearched = false;
   
   @override
   void initState() {
@@ -33,29 +27,25 @@ class _HomePageState extends State<HomePage> {
   }
   @override
   Widget build(BuildContext context) {
-    final _promptProvider = Provider.of<PromptProvider>(context, listen: false);
+    final promptProvider = Provider.of<PromptProvider>(context, listen: false);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black12,
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const AppHeader(),
-              InkWell(
-                onTap: () {
-                  _promptProvider.enabled = true;
-                  setState(() {
-                     _isSearched = true;
-                  });
-                 
-                },
-                child: const PromptTextForm(),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const AppHeader(),
+                const PromptTextForm(),
+                Visibility(
+                  visible: Provider.of<PromptProvider>(context).enabled,
+                  child: const SearchBottomSheet(),
+                ),
+              ],
               ),
-              Visibility(
-                visible: _isSearched,
-                child: SearchBottomSheet()),
-            ],
-            ),
+          ),
         ),
       ),
     );

@@ -18,12 +18,12 @@ class PromptProvider extends ChangeNotifier{
   SearchStates _oldState = SearchStates.hasNotTyped;
   final List<KeywordForPrompts> keywordBook = [];
   
-  bool get enabled => _enabled;
+  bool get enabled => textEditingController != null ? textEditingController!.text.isNotEmpty : false;
   String get currTextInput => _textInput;
 
   String get textAfterCommna => textEditingController!.text.split(',').last;
 
-  SearchStates get searchState{
+  void setSearchState(){
     SearchStates newState;
     if (textEditingController == null || textEditingController!.text.isEmpty) {
       newState = SearchStates.hasNotTyped;
@@ -35,15 +35,15 @@ class PromptProvider extends ChangeNotifier{
       }
     }
     _oldState = newState;
-    notifyListeners();
-    return newState;
+    notifyListeners();  
   }
+  
+  SearchStates get searchState => _oldState;
 
   void myNotifyListeners() => notifyListeners();
 
   void initTextEditingController(){
     textEditingController = TextEditingController();
-    textEditingController!.addListener(() {searchState;});
   }
 
   set enabled(bool newVal){

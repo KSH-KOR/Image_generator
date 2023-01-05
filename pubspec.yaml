@@ -41,6 +41,8 @@ dependencies:
   openai_dalle_wrapper: ^1.0.0
   image: ^4.0.5
   uuid: ^3.0.7
+  provider: ^6.0.5
+  english_words: ^4.0.0
 
 dev_dependencies:
   flutter_test:

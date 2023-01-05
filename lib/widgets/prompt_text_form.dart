@@ -12,32 +12,29 @@ class PromptTextForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final promptProvider = Provider.of<PromptProvider>(context, listen: false);
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width,
-        maxHeight: MediaQuery.of(context).size.height/3,
-      ),
-      child: TextField(
-        maxLines: 10,
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
-          enabled: true/*promptProvider.enabled*/,
-          controller: PromptProvider.textEditingController,
-          onChanged: (_) {
-            promptProvider.setSearchState();
-          },
-          onTap: () => promptProvider.enabled = true,
-          onSubmitted: (value) {
-            promptProvider.addKeyword(keyword: value);
-            promptProvider.enabled = false;
-          },
+    return TextField(
+      maxLines: 10,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: "Enter some words or sentences...",
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(width: 0.4, color: Color(0xFFF76691)),
+          borderRadius: BorderRadius.circular(8.0),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(width: 0.4, color: Color(0xFFF76691)),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      enabled: true,
+      controller: PromptProvider.textEditingController,
+      onChanged: (_) {
+        promptProvider.setSearchState();
+      },
+      onTap: () => promptProvider.isSearchingMode = true,
+      onSubmitted: (value) {
+        promptProvider.submitTextField();
+      },
     );
   }
 }

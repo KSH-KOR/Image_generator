@@ -1,10 +1,15 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mut_is/utils/helper_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../enum/search_states.dart';
+import '../services/image_generate_service.dart';
 import '../services/prompt_service.dart';
+import '../widgets/app_header.dart';
+import '../widgets/form_submit_button.dart';
 import '../widgets/prompt_text_form.dart';
+import '../widgets/search_bottom_sheet.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,38 +19,63 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
   @override
   void initState() {
     PromptProvider.textEditingController = TextEditingController();
+    OpenAIProvider.apiKey =
+        "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";
     super.initState();
   }
+
   @override
   void dispose() {
     PromptProvider.textEditingController!.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final promptProvider = Provider.of<PromptProvider>(context, listen: false);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.black12,
-        body: SingleChildScrollView(
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const AppHeader(),
-                const PromptTextForm(),
-                Visibility(
-                  visible: Provider.of<PromptProvider>(context).enabled,
-                  child: const SearchBottomSheet(),
+        backgroundColor: Color(0xFF0A0B12),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Padding(
+              padding:
+                  EdgeInsets.only(top: 52, bottom: 29, left: 20, right: 20),
+              child: AppHeader(),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width,
+                  maxHeight: 186.0 / 844.0 * MediaQuery.of(context).size.height,
                 ),
-              ],
+                child: Stack(
+                  children: const [
+                    PromptTextForm(),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FormSubmitButton(),
+                    ),
+                  ],
+                ),
               ),
-          ),
+            ),
+            addVerticalGap(28),
+            Expanded(
+              child: Visibility(
+                visible: Provider.of<PromptProvider>(context).isSearchingMode,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: SearchBottomSheet(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -54,53 +84,4 @@ class _HomePageState extends State<HomePage> {
 
 
 
-class SearchBottomSheet extends StatelessWidget {
-  const SearchBottomSheet({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final promptProvider = Provider.of<PromptProvider>(context);
-    switch(promptProvider.searchState){
-      case SearchStates.hasNotTyped:
-        final recentKeywords = promptProvider.getRecentKeyword();
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: recentKeywords.length,
-          itemBuilder: (context, index) {
-            return InkWell(
-                onTap: () => promptProvider.putRecentWordInTheTextField(textToPut: recentKeywords[index].keyword),
-                child: Card(
-              child: Text(recentKeywords[index].keyword),
-            ));
-        },);
-      case SearchStates.typing:
-        final relatedWords = promptProvider.getRelatedWords();
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: relatedWords.length,
-          itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () => promptProvider.replaceLastWordAfterComma(textToReplace: relatedWords[index]),
-              child: Card(
-                child: Text(relatedWords[index]),
-              ),
-            );
-        },);
-      case SearchStates.afterComma:
-        return Container();
-    }
-  }
-}
-
-
-
-class AppHeader extends StatelessWidget {
-  const AppHeader({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(child: const Text("Brand Icon & Name"),);
-  }
-}

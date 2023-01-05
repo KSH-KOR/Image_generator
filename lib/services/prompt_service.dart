@@ -12,14 +12,15 @@ import '../enum/search_states.dart';
 
 class PromptProvider extends ChangeNotifier{
   static TextEditingController? textEditingController;
-  String _textInput = '';
+  String _finalPromptInput = '';
   String _textAfterComma = '';
   bool _enabled = false;
   SearchStates _oldState = SearchStates.hasNotTyped;
   final List<KeywordForPrompts> keywordBook = [];
   
-  bool get enabled => textEditingController != null ? textEditingController!.text.isNotEmpty : false;
-  String get currTextInput => _textInput;
+  bool get isSearchingMode => _enabled;
+  String get finalPromptInput => _finalPromptInput;
+  set finalPromptInput(newVal) => _finalPromptInput;
 
   String get textAfterCommna => textEditingController!.text.split(',').last;
 
@@ -37,21 +38,22 @@ class PromptProvider extends ChangeNotifier{
     _oldState = newState;
     notifyListeners();  
   }
-  
-  SearchStates get searchState => _oldState;
 
-  void myNotifyListeners() => notifyListeners();
+  SearchStates get searchState {
+    return _oldState;
+  } 
 
-  void initTextEditingController(){
-    textEditingController = TextEditingController();
+  void submitTextField(){
+    addKeyword(keyword: textEditingController!.text);
+    isSearchingMode = false;
   }
 
-  set enabled(bool newVal){
+  void cancelSearchingMode(){
+    isSearchingMode = false;
+  }
+
+  set isSearchingMode(bool newVal){
     _enabled = newVal;
-    notifyListeners();
-  }
-  set currTextInput(String newVal){
-    _textInput = newVal;
     notifyListeners();
   }
   List<KeywordForPrompts> getRecentKeyword({int n = 10}){
@@ -95,31 +97,29 @@ class PromptProvider extends ChangeNotifier{
   void addKeyword({required String keyword}){
     final foundKeywords = findKeywordsByKeywordText(keyword: keyword);
     if(foundKeywords.isNotEmpty){
-      _updateKeyword(keywordList: foundKeywords);
+      return;
     }
     keywordBook.add(KeywordForPrompts.fromKeyword(keyword: keyword));
-    notifyListeners();
   }
   void _updateKeyword({String? keywordId, Iterable<KeywordForPrompts>? keywordList}){
     if(keywordId == null && keywordList == null) throw IdAndObjectAreBothNullException("keyword id and keywork object are both null. cannot update keyword");
     if(keywordList != null){
-      removeKeyword(keywordList: keywordList);
-      addKeyword(keyword: keywordList.first.keyword);
+      String keyword = keywordList.first.keyword;
+      removeKeyword(keywordId: keywordList.first.keywordId);
+      keywordBook.add(KeywordForPrompts.fromKeyword(keyword: keyword));
+    } else{ 
     }
   }
-  int? removeKeyword({String? keywordId, Iterable<KeywordForPrompts>? keywordList}){
+  void removeKeyword({String? keywordId, Iterable<KeywordForPrompts>? keywordList}){
     if(keywordId == null && keywordList == null) throw IdAndObjectAreBothNullException("keyword id and keywork object are both null. cannot update keyword");
     
     if(keywordId != null){
       keywordBook.removeWhere((element) => element.keywordId.compareTo(keywordId) == 0);
-      return 1;
     } else if(keywordList != null){
       for(final keyword in keywordList){
-        return removeKeyword(keywordId: keyword.keywordId)! + 1;
+        keywordBook.removeWhere((element) => element.keywordId.compareTo(keyword.keywordId) == 0);
       }
-    } else{
-      return 0;
-    }
+    } 
 
   }
   Iterable<KeywordForPrompts> findKeywordsByKeywordText({required String keyword}){
@@ -146,12 +146,6 @@ class KeywordForPrompts{
   factory KeywordForPrompts.fromKeyword({required String keyword}){
     return KeywordForPrompts(keyword: keyword, lastSearchedTime: DateTime.now(), searchedCount: 1);
   }
-}
-
-class KeywordBook{
-  final List<KeywordForPrompts> keywordBook = [];
-
-  
 }
 
 class IdAndObjectAreBothNullException implements Exception{

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:mut_is/services/prompt_service.dart';
 import 'package:mut_is/views/homepage.dart';
-import 'package:mut_is/views/search_view.dart';
 import 'package:provider/provider.dart';
 
 import 'enum/routes.dart';
@@ -21,7 +20,7 @@ void main() {
       initialRoute: PageRoutes.homepageRoute,
       routes: {
         PageRoutes.homepageRoute :(context) => const HomePage(),
-        PageRoutes.searchRoute :(context) => const SearchView(),
+        PageRoutes.imageResultRoute : (context) => const ImageListView(),
       },
     ),
   ));

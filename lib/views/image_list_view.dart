@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:mut_is/utils/helper_widgets.dart';
 import 'package:openai_client/openai_client.dart' as openapi;
@@ -14,51 +16,103 @@ class ImageListView extends StatefulWidget {
 class _ImageListViewState extends State<ImageListView> {
   @override
   Widget build(BuildContext context) {
+    List<String> imageURLs = getImageURLsFromResponse(
+                    response: ModalRoute.of(context)!.settings.arguments
+                        as openapi.Response?);
     return Scaffold(
       backgroundColor: Color(0xFF0A0B12),
-      body: Column(
-        children: [
-          addVerticalGap(49),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD9D9D9).withOpacity(0.04),
-                ),
-                onPressed: Navigator.of(context).pop,
-                child: const Text("Home"),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(imageURLs[0]),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  addVerticalGap(49),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 73,
+                        height: 31,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD9D9D9).withOpacity(0.04),
+                            padding: EdgeInsets.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            alignment: Alignment.center,
+                            side: BorderSide(width: 1, color: Color(0xFFF76691),)
+                          ),
+                          onPressed: Navigator.of(context).pop,
+                          child: const Text(
+                            "Home",
+                            style: TextStyle(
+                              color: Color(0xFFF76691),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  addVerticalGap(40),
+                  const Text("TEXT ARTIST", style: TextStyle(color: Color(0xFFF76691),),),
+                  addVerticalGap(17),
+                  ImageSwipingPart(
+                      imageURLs: imageURLs),
+                  addVerticalGap(11),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(onPressed: () {}, icon: Icon(Icons.download, color: Color(0xFFF76691),)),
+                      IconButton(onPressed: () {}, icon: Icon(Icons.share, color: Color(0xFFF76691),)),
+                    ],
+                  ),
+                  addVerticalGap(29),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD9D9D9).withOpacity(0.04),
+                    ),
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 106.0 / 844.0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("INTPUT TEXT", style: TextStyle(color: Color(0xFFF76691),),),
+                          addVerticalGap(17),
+                          Text(OpenAIProvider.prompt, style: const TextStyle(color: Color(0xFFF76691),),),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          ImageSwipingPart(
-              imageURLs: getImageURLsFromResponse(
-                  response: ModalRoute.of(context)!.settings.arguments
-                      as openapi.Response)),
-          addVerticalGap(11),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(onPressed: () {}, icon: Icon(Icons.bubble_chart)),
-              IconButton(onPressed: () {}, icon: Icon(Icons.bubble_chart)),
-            ],
-          ),
-          addVerticalGap(29),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFD9D9D9).withOpacity(0.04),
-            ),
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 106.0 / 844.0,
-            child: Column(
-              children: [],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
+
+class ImageBackgroundPart extends StatelessWidget {
+  const ImageBackgroundPart({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenAIProvider.images![0];
+  }
+}
+
 
 class ImageSwipingPart extends StatefulWidget {
   const ImageSwipingPart({
@@ -73,10 +127,9 @@ class ImageSwipingPart extends StatefulWidget {
 }
 
 class _ImageSwipingPartState extends State<ImageSwipingPart> {
-  late final List<Image> imageList;
   @override
   void initState() {
-    imageList = widget.imageURLs
+    OpenAIProvider.images = widget.imageURLs
         .map((url) => Image.network(
               url,
               fit: BoxFit.cover,
@@ -89,6 +142,7 @@ class _ImageSwipingPartState extends State<ImageSwipingPart> {
                 }
                 return Center(
                   child: CircularProgressIndicator(
+                    color: Color(0xFFF76691),
                     value: loadingProgress.expectedTotalBytes != null
                         ? loadingProgress.cumulativeBytesLoaded /
                             loadingProgress.expectedTotalBytes!
@@ -105,12 +159,12 @@ class _ImageSwipingPartState extends State<ImageSwipingPart> {
   Widget build(BuildContext context) {
     return ListView.builder(
         shrinkWrap: true,
-        itemCount: imageList.length,
+        itemCount: OpenAIProvider.images?.length ?? 0,
         itemBuilder: (context, index) => SizedBox(
               height: MediaQuery.of(context).size.height * 408.0 / 884.0,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: imageList[index],
+                child: OpenAIProvider.images?[index] ?? const Text("No image"),
               ),
       ),
     );

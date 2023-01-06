@@ -18,6 +18,8 @@ class OpenAIProvider {
   static String prompt = '';
   static String? apiKey;
 
+  static List<Image>? images;
+
   OpenAIConfiguration? get conf => apiKey != null
       ? OpenAIConfiguration(
           apiKey: apiKey!,
@@ -107,8 +109,11 @@ Future<Response> getResponse({required Request request}) async {
     rethrow;
   }
 }
-List<String> getImageURLsFromResponse({required Response response}){
+List<String> getImageURLsFromResponse({required Response? response}){
   final Images image;
+  if(response == null){
+    return ["data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="];
+  }
   try {
     image = response.get();
   } on StateError catch (_) {

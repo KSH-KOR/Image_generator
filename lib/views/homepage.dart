@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     PromptProvider.textEditingController = TextEditingController();
     OpenAIProvider.apiKey =
-        "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";
+        "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";
     super.initState();
   }
 
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                   children: const [
                     PromptTextForm(),
                     Align(
-                      alignment: Alignment.bottomRight,
+                      alignment: Alignment(0.95, 0.8),
                       child: FormSubmitButton(),
                     ),
                   ],

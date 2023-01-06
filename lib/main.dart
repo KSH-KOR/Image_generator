@@ -13,6 +13,7 @@ void main() {
       ChangeNotifierProvider<PromptProvider>(create: (context) => PromptProvider(),)
     ],
     child: MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,

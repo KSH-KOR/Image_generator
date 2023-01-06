@@ -24,7 +24,10 @@ class SearchBottomSheet extends StatelessWidget {
             return InkWell(
               onTap: () => promptProvider.putRecentWordInTheTextField(
                   textToPut: recentKeywords[index].keyword),
-              child: Text(recentKeywords[index].keyword, style: const TextStyle(color: Color(0xFFF76691)),),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Text(recentKeywords[index].keyword, style: const TextStyle(color: Color(0xFFF76691)),),
+              ),
             );
           },
         );
@@ -37,7 +40,10 @@ class SearchBottomSheet extends StatelessWidget {
             return InkWell(
               onTap: () => promptProvider.replaceLastWordAfterComma(
                   textToReplace: relatedWords[index]),
-              child: Text(relatedWords[index], style: const TextStyle(color: Color(0xFFF76691)),),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Text(relatedWords[index], style: const TextStyle(color: Color(0xFFF76691)),),
+              ),
             );
           },
         );

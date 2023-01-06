@@ -17,7 +17,6 @@ class FormSubmitButton extends StatelessWidget {
         builder: (_) {
           return Dialog(
             // The background color
-            
             backgroundColor: Colors.transparent,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),

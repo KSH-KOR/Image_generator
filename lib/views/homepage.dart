@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mut_is/theme/app_layout.dart';
 import 'package:mut_is/utils/helper_widgets.dart';
 import 'package:provider/provider.dart';
-
 import '../services/image_generate_service.dart';
 import '../services/prompt_service.dart';
 import '../widgets/app_header.dart';

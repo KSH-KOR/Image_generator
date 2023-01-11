@@ -42,6 +42,9 @@ dependencies:
   provider: ^6.0.5
   english_words: ^4.0.0
   flutter_svg: ^1.1.6
+  share_plus: ^6.3.0
+  http: ^0.13.3
+  path_provider: ^2.0.3
   flutter_file_downloader: ^1.1.0+1
 
 dev_dependencies:

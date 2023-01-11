@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:mut_is/services/image_generate_service.dart';
+import 'package:provider/provider.dart';
 
 class ActionIcons extends StatelessWidget {
   const ActionIcons({
@@ -33,9 +34,9 @@ class ActionIcons extends StatelessWidget {
             icon: const Icon(
               Icons.download,
             )),
-        IconButton(
-            onPressed: () {},
-            icon: const Icon(
+        const IconButton(
+            onPressed: OpenAIProvider.shareImage,
+            icon: Icon(
               Icons.share,
             )),
       ],

@@ -8,6 +8,7 @@ import 'package:openai_client/openai_client.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:image/image.dart' as eimage;
+import 'package:share_plus/share_plus.dart';
 
 import '../enum/request_category.dart';
 
@@ -23,6 +24,15 @@ class OpenAIProvider {
   static List<String>? imageURLs;
   static String prompt = '';
   static String? apiKey;
+
+  static Future<void> shareImage() async {
+    final urlImage = imageURLs![0];
+    final url = Uri.parse(urlImage);
+    final response = await http.get(url);
+    final bytes = response.bodyBytes;
+
+    await Share.shareXFiles([XFile.fromData(bytes)]);
+  }
 
   static List<Image>? images = OpenAIProvider.imageURLs?.map((url) => Image.network(
               url,

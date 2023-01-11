@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     PromptProvider.textEditingController = TextEditingController();
     OpenAIProvider.apiKey =
-        "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";
+        "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";
     super.initState();
   }
 

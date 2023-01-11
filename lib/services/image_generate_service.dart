@@ -12,13 +12,39 @@ import 'package:image/image.dart' as eimage;
 import '../enum/request_category.dart';
 
 class ImageGenerateProvider extends ChangeNotifier{
-
+  bool _isJustGenerated = false;
+  set isJustGenerated(bool newVal){
+    _isJustGenerated = newVal;
+    notifyListeners();
+  }
+  bool get isJustGenerated => _isJustGenerated;
 }
 class OpenAIProvider {
+  static List<String>? imageURLs;
   static String prompt = '';
   static String? apiKey;
 
-  static List<Image>? images;
+  static List<Image>? images = OpenAIProvider.imageURLs?.map((url) => Image.network(
+              url,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Text("image load failed. error message: $url");
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+            ))
+        .toList();
 
   OpenAIConfiguration? get conf => apiKey != null
       ? OpenAIConfiguration(

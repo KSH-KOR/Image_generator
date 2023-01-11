@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mut_is/theme/app_layout.dart';
 import 'package:mut_is/utils/helper_widgets.dart';
 import 'package:provider/provider.dart';
 
-import '../enum/search_states.dart';
 import '../services/image_generate_service.dart';
 import '../services/prompt_service.dart';
 import '../widgets/app_header.dart';
 import '../widgets/form_submit_button.dart';
 import '../widgets/prompt_text_form.dart';
 import '../widgets/search_bottom_sheet.dart';
+import '../widgets/selectable_keyword_panel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     PromptProvider.textEditingController = TextEditingController();
     OpenAIProvider.apiKey =
-        "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";
+        "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";
     super.initState();
   }
 
@@ -35,21 +35,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final promptProvider = Provider.of<PromptProvider>(context, listen: false);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Color(0xFF0A0B12),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Padding(
-              padding:
-                  EdgeInsets.only(top: 52, bottom: 29, left: 20, right: 20),
-              child: AppHeader(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ConstrainedBox(
+        backgroundColor: const Color(0xFF0A0B12),
+        body: AppLayout.mainContentLayout(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              addVerticalGap(52),
+              const AppHeader(),
+              addVerticalGap(29),
+              ConstrainedBox(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width,
                   maxHeight: 186.0 / 844.0 * MediaQuery.of(context).size.height,
@@ -64,24 +60,22 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-            ),
-            addVerticalGap(28),
-            Expanded(
-              child: Visibility(
-                visible: Provider.of<PromptProvider>(context).isSearchingMode,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: SearchBottomSheet(),
+              addVerticalGap(28),
+              Expanded(
+                child: Visibility(
+                  visible: Provider.of<PromptProvider>(context).isSearchingMode,
+                  child: const SearchBottomSheet(),
                 ),
               ),
-            ),
-          ],
+              Visibility(
+                  visible:
+                      !Provider.of<PromptProvider>(context).isSearchingMode,
+                  child: const SelectableKeywordPanel()),
+              addVerticalGap(10),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-
-
-

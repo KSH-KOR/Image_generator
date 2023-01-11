@@ -13,7 +13,6 @@ import '../widgets/input_text_panel.dart';
 
 class ImageListView extends StatefulWidget {
   const ImageListView({Key? key}) : super(key: key);
-  
 
   @override
   State<ImageListView> createState() => _ImageListViewState();
@@ -25,47 +24,33 @@ class _ImageListViewState extends State<ImageListView> {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0B12),
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(OpenAIProvider.imageURLs![0]),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: SingleChildScrollView(
-            child: Container(
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                    children: [
-                      addVerticalGap(49),
-                      const BackToHomeButton(),
-                      addVerticalGap(40),
-                      const Text(
-                        "TEXT ARTIST",
-                        style: TextStyle(
-                          color: Color(0xFFF76691),
-                        ),
-                      ),
-                      addVerticalGap(17),
-                      const ImageSwipingPart(),
-                      addVerticalGap(11),
-                      const Visibility(
-                        visible: true,
-                        child: ActionIcons(),
-                      ),
-                      addVerticalGap(29),
-                      const InputTextPanel(),
-                    ],
-                  ),
+        decoration: BoxDecoration(color: Colors.black.withOpacity(0)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              addVerticalGap(49),
+              const BackToHomeButton(),
+              addVerticalGap(40),
+              const Text(
+                "TEXT ARTIST",
+                style: TextStyle(
+                  color: Color(0xFFF76691),
                 ),
               ),
-          ),
+              addVerticalGap(17),
+              const ImageSwipingPart(),
+              addVerticalGap(11),
+              const Visibility(
+                visible: true,
+                child: ActionIcons(),
+              ),
+              addVerticalGap(29),
+              const InputTextPanel(),
+            ],
           ),
         ),
-      
+      ),
     );
   }
 }

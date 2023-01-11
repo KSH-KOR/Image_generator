@@ -16,7 +16,6 @@ class InputTextPanel extends StatelessWidget {
         color: const Color(0xFFD9D9D9).withOpacity(0.04),
       ),
       width: double.infinity,
-      height: MediaQuery.of(context).size.height * 106.0 / 844.0,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(

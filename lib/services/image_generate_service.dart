@@ -57,29 +57,28 @@ class OpenAIProvider {
     if (imageLocalPath == null) return;
     return await Share.shareFiles([imageLocalPath!]);
   }
-
-  static List<Image>? images = OpenAIProvider.imageURLs
-      ?.map((url) => Image.network(
-            url,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Text("image load failed. error message: $url");
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) {
-                return child;
-              }
-              return Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                ),
-              );
-            },
-          ))
-      .toList();
+  static get images => imageURLs?.map((url) {
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Text("image load failed. error message: $url");
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) {
+          return child;
+        }
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    loadingProgress.expectedTotalBytes!
+                : null,
+          ),
+        );
+      },
+    );
+  }).toList();
 
   OpenAIConfiguration? get conf => apiKey != null
       ? OpenAIConfiguration(

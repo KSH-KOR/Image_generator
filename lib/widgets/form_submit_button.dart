@@ -39,10 +39,13 @@ class FormSubmitButton extends StatelessWidget {
         });
 
     getResponse(request: getRequest(n: 1)).then((response) {
-      Navigator.of(context).pop();
       OpenAIProvider.imageURLs = getImageURLsFromResponse(
         response: response);
-      Navigator.of(context).pushNamed(PageRoutes.imageResultRoute);
+      OpenAIProvider.imageStoreInDevice().then((value) async {
+        Navigator.of(context).pop();
+        await Navigator.of(context).pushNamed(PageRoutes.imageResultRoute);
+    });
+      
     });
     
   }

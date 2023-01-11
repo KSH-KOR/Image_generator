@@ -16,20 +16,22 @@ class ActionIcons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         IconButton(
-            onPressed: () {
-              log(OpenAIProvider.imageURLs![0]);
-              FileDownloader.downloadFile(
-                  url: OpenAIProvider.imageURLs![0],
-                  name: "name",
-                  onProgress: (String? fileName, double? progress) {
-                    log('downloading');
-                  },
-                  onDownloadCompleted: (String path) {
-                    log('FILE DOWNLOADED TO PATH: $path');
-                  },
-                  onDownloadError: (String error) {
-                    log('DOWNLOAD ERROR: $error');
-                  });
+            onPressed: () async {
+              final downloading = OpenAIProvider.downloadImage();
+              late final SnackBar snackBar;
+              await downloading.onError((error, stackTrace) {
+                snackBar = const SnackBar(
+                  content: Text('Image downloading failed!'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                return;
+              });
+              await downloading.whenComplete((){
+                snackBar = const SnackBar(
+                  content: Text('Image downloaded!'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              });
             },
             icon: const Icon(
               Icons.download,

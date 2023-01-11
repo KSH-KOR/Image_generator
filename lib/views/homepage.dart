@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mut_is/theme/app_layout.dart';
 import 'package:mut_is/utils/helper_widgets.dart';
@@ -23,7 +25,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     PromptProvider.textEditingController = TextEditingController();
     OpenAIProvider.apiKey =
-        "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";
+        "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";
+    log(OpenAIProvider.apiKey!);
     super.initState();
   }
 

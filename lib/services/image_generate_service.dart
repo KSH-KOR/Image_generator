@@ -1,60 +1,86 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:openai_client/openai_client.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:http/http.dart' as http;
 
 import 'package:image/image.dart' as eimage;
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../enum/request_category.dart';
 
-class ImageGenerateProvider extends ChangeNotifier{
+class ImageGenerateProvider extends ChangeNotifier {
   bool _isJustGenerated = false;
-  set isJustGenerated(bool newVal){
+  set isJustGenerated(bool newVal) {
     _isJustGenerated = newVal;
     notifyListeners();
   }
+
   bool get isJustGenerated => _isJustGenerated;
 }
+
 class OpenAIProvider {
   static List<String>? imageURLs;
+  static String? currImageUrl;
+  static String? imageLocalPath;
+  static Uint8List? temporarImageByteData;
   static String prompt = '';
   static String? apiKey;
 
-  static Future<void> shareImage() async {
-    final urlImage = imageURLs![0];
-    final url = Uri.parse(urlImage);
-    final response = await http.get(url);
-    final bytes = response.bodyBytes;
-
-    await Share.shareXFiles([XFile.fromData(bytes)]);
+  static Future<void> imageStoreInDevice() async {
+    final temporarImageByteData =
+        (await http.get(Uri.parse(imageURLs![0]))).bodyBytes;
+    final tempPath = (await getTemporaryDirectory()).path;
+    imageLocalPath = "$tempPath/generatedImageByOpenAI.jpg";
+    File(imageLocalPath!).writeAsBytes(temporarImageByteData);
   }
 
-  static List<Image>? images = OpenAIProvider.imageURLs?.map((url) => Image.network(
-              url,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Text("image load failed. error message: $url");
-              },
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                }
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                  ),
-                );
-              },
-            ))
-        .toList();
+  static Future<String?> downloadImage() async {
+    if (temporarImageByteData == null) return null;
+    if (!kIsWeb) {
+      if (Platform.isIOS || Platform.isAndroid || Platform.isMacOS) {
+        bool status = await Permission.storage.isGranted;
+
+        if (!status) await Permission.storage.request();
+      }
+    }
+    return FileSaver.instance.saveFile("file", temporarImageByteData!, "jpeg",
+        mimeType: MimeType.JPEG);
+  }
+
+  static Future<void> shareImage() async {
+    if (imageLocalPath == null) return;
+    return await Share.shareFiles([imageLocalPath!]);
+  }
+
+  static List<Image>? images = OpenAIProvider.imageURLs
+      ?.map((url) => Image.network(
+            url,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Text("image load failed. error message: $url");
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              }
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              );
+            },
+          ))
+      .toList();
 
   OpenAIConfiguration? get conf => apiKey != null
       ? OpenAIConfiguration(
@@ -65,7 +91,7 @@ class OpenAIProvider {
       conf != null ? OpenAIClient(configuration: conf!) : null;
 }
 
-File encodeJpgToPng({required File inputIpg}){
+File encodeJpgToPng({required File inputIpg}) {
   // Read a jpeg image from file.
   eimage.Image? image = eimage.decodeImage(inputIpg.readAsBytesSync());
 
@@ -93,7 +119,6 @@ Future<List<Future<Widget>>> createImagesWithOpenAI({int n = 5}) async {
 
 Future<List<Future<Widget>>> editImagesWithOpenAI(
     {required File inputImage, int n = 5}) async {
-  
   final Request requestImage = OpenAIProvider().client!.images.edit(
         image: encodeJpgToPng(inputIpg: inputImage),
         prompt: OpenAIProvider.prompt,
@@ -111,28 +136,29 @@ Future<List<Future<Widget>>> createDifferentVariationsWithOpenAI(
   return _getImagesFromRequest(request: requestImage);
 }
 
-
-
-Request getRequest({RequestCategory requestCategory = RequestCategory.create, int n = 5, File? inputImage}){
-  switch(requestCategory){
+Request getRequest(
+    {RequestCategory requestCategory = RequestCategory.create,
+    int n = 5,
+    File? inputImage}) {
+  switch (requestCategory) {
     case RequestCategory.create:
       return OpenAIProvider().client!.images.create(
-        prompt: OpenAIProvider.prompt,
-        n: n,
-      );
+            prompt: OpenAIProvider.prompt,
+            n: n,
+          );
     case RequestCategory.edit:
-      if(inputImage == null) throw Error();
+      if (inputImage == null) throw Error();
       return OpenAIProvider().client!.images.edit(
-        image: encodeJpgToPng(inputIpg: inputImage),
-        prompt: OpenAIProvider.prompt,
-        n: n,
-      );
+            image: encodeJpgToPng(inputIpg: inputImage),
+            prompt: OpenAIProvider.prompt,
+            n: n,
+          );
     case RequestCategory.variations:
-      if(inputImage == null) throw Error();
+      if (inputImage == null) throw Error();
       return OpenAIProvider().client!.images.variation(
-        image: encodeJpgToPng(inputIpg: inputImage),
-        n: n,
-      );
+            image: encodeJpgToPng(inputIpg: inputImage),
+            n: n,
+          );
   }
 }
 
@@ -145,10 +171,13 @@ Future<Response> getResponse({required Request request}) async {
     rethrow;
   }
 }
-List<String> getImageURLsFromResponse({required Response? response}){
+
+List<String> getImageURLsFromResponse({required Response? response}) {
   final Images image;
-  if(response == null){
-    return ["data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="];
+  if (response == null) {
+    return [
+      "data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+    ];
   }
   try {
     image = response.get();
@@ -157,13 +186,17 @@ List<String> getImageURLsFromResponse({required Response? response}){
       response.json['error']['message'],
     ];
   } catch (e) {
-    return [
-      "error occured: $e"
-    ];
+    return ["error occured: $e"];
   }
-  return image.data.map((e) => e.url,).toList();
+  return image.data
+      .map(
+        (e) => e.url,
+      )
+      .toList();
 }
-Future<List<Future<Widget>>> _getImagesFromRequest({required Request request}) async {
+
+Future<List<Future<Widget>>> _getImagesFromRequest(
+    {required Request request}) async {
   final Images image;
   late final Response response;
   try {

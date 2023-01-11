@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../enum/search_states.dart';
+import '../services/image_generate_service.dart';
 import '../services/prompt_service.dart';
 
 class SearchBottomSheet extends StatelessWidget {
@@ -13,7 +14,7 @@ class SearchBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final promptProvider = Provider.of<PromptProvider>(context, listen: false);
-    log(promptProvider.searchState.toString());
+     log(OpenAIProvider.apiKey!);
     switch(Provider.of<PromptProvider>(context).searchState){
       case SearchStates.hasNotTyped:
         final recentKeywords = promptProvider.getRecentKeyword();

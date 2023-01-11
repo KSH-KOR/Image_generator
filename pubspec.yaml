@@ -45,6 +45,10 @@ dependencies:
   english_words: ^4.0.0
   fitted_text_field_container: ^2.0.0
   flutter_svg: ^1.1.6
+  share_plus: ^6.3.0
+  http: ^0.13.3
+  path_provider: ^2.0.3
+
 
 dev_dependencies:
   flutter_test:

@@ -5,6 +5,7 @@ import 'package:mut_is/theme/app_layout.dart';
 import 'package:mut_is/utils/helper_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../services/const/openai_api.dart';
 import '../services/image_generate_service.dart';
 import '../services/prompt_service.dart';
 import '../widgets/app_header.dart';
@@ -24,8 +25,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     PromptProvider.textEditingController = TextEditingController();
-    OpenAIProvider.apiKey =
-        "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";
+    OpenAIProvider.apiKey = apiKey;
     log(OpenAIProvider.apiKey!);
     super.initState();
   }
@@ -54,15 +54,11 @@ class _HomePageState extends State<HomePage> {
                   maxWidth: MediaQuery.of(context).size.width,
                   maxHeight: 186.0 / 844.0 * MediaQuery.of(context).size.height,
                 ),
-                child: Stack(
-                  children: const [
-                    PromptTextForm(),
-                    Align(
-                      alignment: Alignment(0.95, 0.8),
-                      child: FormSubmitButton(),
-                    ),
-                  ],
-                ),
+                child: const PromptTextForm(), 
+              ),
+              Visibility(
+                visible: Provider.of<PromptProvider>(context).isSearchingMode,
+                child: const FormSubmitButton(),
               ),
               addVerticalGap(28),
               Expanded(

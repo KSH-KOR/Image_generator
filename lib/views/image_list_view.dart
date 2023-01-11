@@ -24,16 +24,7 @@ class _ImageListViewState extends State<ImageListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0B12),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(OpenAIProvider.imageURLs![0]),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: SingleChildScrollView(
+      body: SingleChildScrollView(
             child: Container(
               decoration: BoxDecoration(color: Colors.black.withOpacity(0)),
               child: Padding(
@@ -63,8 +54,7 @@ class _ImageListViewState extends State<ImageListView> {
                 ),
               ),
           ),
-          ),
-        ),
+          
       
     );
   }

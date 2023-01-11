@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:openai_client/openai_client.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -34,15 +34,15 @@ class OpenAIProvider {
   static String? apiKey;
 
   static Future<void> imageStoreInDevice() async {
-    final temporarImageByteData =
+    temporarImageByteData =
         (await http.get(Uri.parse(imageURLs![0]))).bodyBytes;
     final tempPath = (await getTemporaryDirectory()).path;
     imageLocalPath = "$tempPath/generatedImageByOpenAI.jpg";
-    File(imageLocalPath!).writeAsBytes(temporarImageByteData);
+    File(imageLocalPath!).writeAsBytes(temporarImageByteData!);
   }
 
-  static Future<String?> downloadImage() async {
-    if (temporarImageByteData == null) return null;
+  static Future<bool?> downloadImage() async {
+    if (imageLocalPath == null) return null;
     if (!kIsWeb) {
       if (Platform.isIOS || Platform.isAndroid || Platform.isMacOS) {
         bool status = await Permission.storage.isGranted;
@@ -50,8 +50,7 @@ class OpenAIProvider {
         if (!status) await Permission.storage.request();
       }
     }
-    return FileSaver.instance.saveFile("file", temporarImageByteData!, "jpeg",
-        mimeType: MimeType.JPEG);
+    return GallerySaver.saveImage(imageLocalPath!, albumName: "TextArtist");
   }
 
   static Future<void> shareImage() async {

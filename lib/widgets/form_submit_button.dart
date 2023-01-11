@@ -55,10 +55,10 @@ class FormSubmitButton extends StatelessWidget {
     return OutlinedButton(
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
-        minimumSize: Size(50, 30),
+        minimumSize: const Size(50, 30),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         alignment: Alignment.center,
-        side: BorderSide(width: 1, color: Color(0xFFF76691),)
+        side: const BorderSide(width: 1, color: Color(0xFFF76691),)
       ),
       onPressed: () {
         Provider.of<PromptProvider>(context, listen: false).submitTextField();

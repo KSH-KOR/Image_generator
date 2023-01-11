@@ -21,7 +21,7 @@ class BackToHomeButton extends StatelessWidget {
               padding: EdgeInsets.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               alignment: Alignment.center,
-              side: BorderSide(width: 1, color: Color(0xFFF76691),)
+              side: const BorderSide(width: 1, color: Color(0xFFF76691),)
             ),
             onPressed: Navigator.of(context).pop,
             child: const Text(

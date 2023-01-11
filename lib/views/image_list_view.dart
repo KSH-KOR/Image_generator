@@ -1,11 +1,7 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mut_is/utils/helper_widgets.dart';
-import 'package:openai_client/openai_client.dart' as openapi;
-import 'package:provider/provider.dart';
 
-import '../services/image_generate_service.dart';
 import '../widgets/action_icons.dart';
 import '../widgets/back_to_home_button.dart';
 import '../widgets/image_swiping_part.dart';

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +12,7 @@ class PromptTextForm extends StatelessWidget {
     final promptProvider = Provider.of<PromptProvider>(context, listen: false);
     return TextField(
       maxLines: 10,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: "Enter some words or sentences...",
         enabledBorder: OutlineInputBorder(

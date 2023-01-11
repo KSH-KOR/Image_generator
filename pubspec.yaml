@@ -42,11 +42,10 @@ dependencies:
   provider: ^6.0.5
   english_words: ^4.0.0
   flutter_svg: ^1.1.6
-  flutter_file_downloader: ^1.1.0+1
   path_provider: ^2.0.11
   share_plus: ^6.3.0
-  file_saver: ^0.1.1
   permission_handler: ^10.2.0
+  gallery_saver: ^2.3.2
 
 dev_dependencies:
   flutter_test:

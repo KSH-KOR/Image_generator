@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'dart:ui';
 
 import '../theme/text_theme.dart';
 
@@ -62,9 +61,9 @@ class _SelectableKeywordPanelState extends State<SelectableKeywordPanel> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: const [
               Counter(),
-              CreateButton(width: 227, height: 58, txt: "CREATE")
+              CreateButton(width: 100, height: 58, txt: "CREATE")
             ],
           )
         ],
@@ -78,7 +77,7 @@ class ChipToken extends StatefulWidget {
   final String tokenname;
   final double width;
   final double height;
-  ChipToken(
+  const ChipToken(
       {super.key,
       required this.tokenname,
       required this.width,
@@ -102,9 +101,9 @@ class _ChipTokenState extends State<ChipToken> {
             decoration: BoxDecoration(
                 border: Border.all(
                   width: 1,
-                  color: Color(0xFFF76691),
+                  color: const Color(0xFFF76691),
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                 color: Colors.black12),
           ),
           Opacity(
@@ -120,7 +119,7 @@ class _ChipTokenState extends State<ChipToken> {
                 )),
           ),
           Text(
-            '${widget.tokenname}',
+            widget.tokenname,
             textAlign: TextAlign.left,
             style: const TextStyle(
                 color: Colors.pink,
@@ -148,7 +147,7 @@ class _TokenBlockState extends State<TokenBlock> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: const [
         ChipToken(
           tokenname: "blur",
           width: 75,
@@ -176,6 +175,8 @@ class _TokenBlockState extends State<TokenBlock> {
 
 //counter widget
 class Counter extends StatefulWidget {
+  const Counter({super.key});
+
   @override
   State<Counter> createState() => _CounterState();
 }
@@ -221,12 +222,12 @@ class _CounterState extends State<Counter> {
           if (count != 1) decrement();
         },
       ),
-      Container(
+      SizedBox(
         width: 32,
         height: 32,
         child: Center(
           child: Text(
-            "${count}",
+            "$count",
             style: const TextStyle(color: Colors.pink),
           ),
         ),
@@ -263,7 +264,7 @@ class CreateButton extends StatefulWidget {
   final double width;
   final double height;
   final String txt;
-  CreateButton(
+  const CreateButton(
       {super.key,
       required this.width,
       required this.height,
@@ -288,9 +289,9 @@ class _CreateButtonState extends State<CreateButton> {
             decoration: BoxDecoration(
               border: Border.all(
                 width: 1,
-                color: Color(0xFFF76691),
+                color: const Color(0xFFF76691),
               ),
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(4.0)),
               color: Colors.black12,
             ),
           ),

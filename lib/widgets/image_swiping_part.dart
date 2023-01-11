@@ -1,10 +1,8 @@
 
 
 
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../services/image_generate_service.dart';
 
